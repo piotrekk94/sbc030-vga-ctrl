@@ -97,3 +97,6 @@ set_location_assignment PIN_74 -to vd[16]
 set_location_assignment PIN_50 -to voe
 set_location_assignment PIN_51 -to vrw
 set_location_assignment PIN_18 -to vsync
+set_global_assignment -name VHDL_FILE vga_timing.vhd
+set_global_assignment -name VHDL_FILE vga_text.vhd
+set_global_assignment -name VHDL_FILE vga_graphics.vhd
