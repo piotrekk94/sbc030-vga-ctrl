@@ -33,9 +33,6 @@ architecture arch of vga_graphics is
 signal x_cnt : std_logic_vector(9 downto 0);
 signal y_cnt : std_logic_vector(8 downto 0);
 
-signal x_pix : integer range 0 to ((hvis / 4) - 1);
-signal y_pix : integer range 0 to ((vvis / 4) - 1);
-
 signal data_i : std_logic_vector(15 downto 0);
 
 signal de_d, de_dd, de_ddd : std_logic;
@@ -44,6 +41,8 @@ signal hsync_d, hsync_dd, hsync_ddd : std_logic;
 signal vsync_d, vsync_dd, vsync_ddd : std_logic;
 
 signal rgbi : std_logic_vector(3 downto 0);
+
+signal addr_i : std_logic_vector(12 downto 0);
 
 begin
 
@@ -56,9 +55,6 @@ bi <= rgbi(3);
 
 x_cnt <= std_logic_vector(to_unsigned(x, x_cnt'length));
 y_cnt <= std_logic_vector(to_unsigned(y, y_cnt'length));
-
-x_pix <= x / 4;
-y_pix <= y / 4;
 
 pipeline : process(rstn, clk)
 begin
@@ -105,10 +101,18 @@ begin
 	if(rstn = '0')then
 		addr <= (others => '0');
 	elsif(rising_edge(clk))then
-		if(x_cnt(3 downto 0) = "0000")then
-			addr <= std_logic_vector(to_unsigned(x_pix + (y_pix * (hvis / 4)), addr'length));
-		elsif(x_cnt(3 downto 0) = "0010")then
-			data_i <= data;
+		if(de = '1')then
+			if(x_cnt(3 downto 0) = "0000")then
+				addr <= addr_i;
+				addr_i <= std_logic_vector(unsigned(addr_i) + 1);
+			elsif(x_cnt(3 downto 0) = "0010")then
+				data_i <= data;
+			end if;
+		else
+			if(vsync_i = '1')then
+				addr_i <= (others => '0');
+				addr <= (others => '0');
+			end if;
 		end if;
 	end if;
 end process;
