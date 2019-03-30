@@ -44,9 +44,7 @@ signal rgbi : std_logic_vector(3 downto 0);
 
 signal addr_i : std_logic_vector(12 downto 0);
 
-signal col_i : std_logic_vector(12 downto 0);
-
-signal inc : std_logic;
+signal addr_old : std_logic_vector(12 downto 0);
 
 begin
 
@@ -106,23 +104,23 @@ begin
 		addr <= (others => '0');
 	elsif(rising_edge(clk))then
 		if(de = '1')then
-			inc <= '0';
 			if(x_cnt(3 downto 0) = "0000")then
-				addr <= std_logic_vector(unsigned(addr_i) + unsigned(col_i));
-				col_i <= std_logic_vector(unsigned(col_i) + 1);
+				addr <=  addr_i;
+				addr_i <= std_logic_vector(unsigned(addr_i) + 1);
 			elsif(x_cnt(3 downto 0) = "0010")then
 				data_i <= data;
 			end if;
 		else
-			if(hsync_i = '1' and inc = '0')then
+			if(hsync_i = '1')then
 				if(y_cnt(1 downto 0) = "11")then
-					inc <= '1';
-					addr_i <= std_logic_vector(unsigned(addr_i) + 40);
+					addr_old <= addr_i;
+				else
+					addr_i <= addr_old;
 				end if;
-				col_i <= (others => '0');
 			end if;
 			if(vsync_i = '1')then
 				addr_i <= (others => '0');
+				addr_old <= (others => '0');
 				addr <= (others => '0');
 			end if;
 		end if;
