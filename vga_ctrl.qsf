@@ -101,3 +101,4 @@ set_global_assignment -name VHDL_FILE vga_timing.vhd
 set_global_assignment -name VHDL_FILE vga_text.vhd
 set_global_assignment -name VHDL_FILE vga_graphics.vhd
 set_global_assignment -name CDF_FILE vga_ctrl.cdf
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to clk

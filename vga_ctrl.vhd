@@ -83,7 +83,13 @@ signal vsync_i : std_logic;
 signal hsync_i : std_logic;
 signal de : std_logic;
 
+signal rstn_d, rstn_dd, rstn_i : std_logic;
+
 begin
+
+rstn_d <= rstn when rising_edge(clk);
+rstn_dd <= rstn_d when rising_edge(clk);
+rstn_i <= rstn_dd;
 
 vrw <= '1';
 voe <= '0';
@@ -92,7 +98,7 @@ vtg : vga_timing generic map(
 	hvis => hvis,
 	vvis => vvis
 )port map(
-	rstn => rstn,
+	rstn => rstn_i,
 	clk => clk,
 	x => x_cnt,
 	y => y_cnt,
@@ -105,7 +111,7 @@ vdc : vga_graphics generic map(
 	hvis => hvis,
 	vvis => vvis
 )port map(
-	rstn => rstn,
+	rstn => rstn_i,
 	clk => clk,
 	x => x_cnt,
 	y => y_cnt,

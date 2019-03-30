@@ -49,8 +49,8 @@ hsync <= '1' when x_cnt >= hvis + hfp and x_cnt < hvis + hfp + hsp else '0';
 
 vsync <= '1' when y_cnt >= vvis + vfp and y_cnt < vvis + vfp + vsp else '0';
 
-x <= x_cnt when de_i = '1' else 0;
-y <= y_cnt when de_i = '1' else 0;
+x <= x_cnt when de_x = '1' else 0;
+y <= y_cnt when de_y = '1' else 0;
 
 x_inc : process(clk, rstn)
 begin
