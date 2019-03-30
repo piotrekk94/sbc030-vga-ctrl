@@ -48,7 +48,7 @@ component vga_timing is
 	);
 end component;
 
-component vga_graphics is
+component vga_gray is
 	generic (
 		hvis : integer := 640;
 		vvis : integer := 400
@@ -56,6 +56,7 @@ component vga_graphics is
 	port (
 		rstn : in std_logic;
 		clk : in std_logic;
+		mode : in std_logic;
 		x : in integer range 0 to (hvis - 1);
 		y : in integer range 0 to (vvis - 1);
 		data : in std_logic_vector(15 downto 0);
@@ -107,12 +108,13 @@ vtg : vga_timing generic map(
 	vsync => vsync_i
 );
 
-vdc : vga_graphics generic map(
+vdc : vga_gray generic map(
 	hvis => hvis,
 	vvis => vvis
 )port map(
 	rstn => rstn_i,
 	clk => clk,
+	mode => mode(0),
 	x => x_cnt,
 	y => y_cnt,
 	data => vd,

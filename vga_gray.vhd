@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 
-entity vga_graphics is
+entity vga_gray is
 	generic (
 		hvis : integer := 640;
 		vvis : integer := 400
@@ -10,6 +10,7 @@ entity vga_graphics is
 	port (
 		rstn : in std_logic;
 		clk : in std_logic;
+		mode : in std_logic;
 		x : in integer range 0 to (hvis - 1);
 		y : in integer range 0 to (vvis - 1);
 		data : in std_logic_vector(15 downto 0);
@@ -28,7 +29,7 @@ entity vga_graphics is
 	);
 end;
 
-architecture arch of vga_graphics is
+architecture arch of vga_gray is
 
 signal x_cnt : std_logic_vector(9 downto 0);
 signal y_cnt : std_logic_vector(8 downto 0);
@@ -36,7 +37,7 @@ signal y_cnt : std_logic_vector(8 downto 0);
 signal data_i : std_logic_vector(15 downto 0);
 
 signal de_d, de_dd, de_ddd : std_logic;
-signal x_sel_d, x_sel_dd, x_sel_ddd : std_logic_vector(1 downto 0);
+signal x_sel_d, x_sel_dd, x_sel_ddd : std_logic_vector(3 downto 0);
 signal hsync_d, hsync_dd, hsync_ddd : std_logic;
 signal vsync_d, vsync_dd, vsync_ddd : std_logic;
 
@@ -65,9 +66,9 @@ begin
 		de_dd <= '0';
 		de_ddd <= '0';
 		
-		x_sel_d <= "00";
-		x_sel_dd <= "00";
-		x_sel_ddd <= "00";
+		x_sel_d <= (others => '0');
+		x_sel_dd <= (others => '0');
+		x_sel_ddd <= (others => '0');
 		
 		hsync_d <= '0';
 		hsync_dd <= '0';
@@ -81,7 +82,7 @@ begin
 		de_dd <= de_d;
 		de_ddd <= de_dd;
 
-		x_sel_d <= x_cnt(3 downto 2);
+		x_sel_d <= x_cnt(3 downto 0);
 		x_sel_dd <= x_sel_d;
 		x_sel_ddd <= x_sel_dd;
 
@@ -133,16 +134,24 @@ begin
 		rgbi <= (others => '0');
 	elsif(rising_edge(clk))then
 		if(de_ddd = '1')then
-			case x_sel_ddd is
-				when "00" =>
-					rgbi <= data_i(3 downto 0);
-				when "01" =>
-					rgbi <= data_i(7 downto 4);
-				when "10" =>
-					rgbi <= data_i(11 downto 8);
-				when "11" =>
-					rgbi <= data_i(15 downto 12);
+			if(mode = '1')then
+				if(data_i(to_integer(unsigned(x_sel_ddd))) = '1')then
+					rgbi <= "1000";
+				else
+					rgbi <= "0000";
+				end if;
+			else
+				case x_sel_ddd(3 downto 2) is
+					when "00" =>
+						rgbi <= data_i(3 downto 0);
+					when "01" =>
+						rgbi <= data_i(7 downto 4);
+					when "10" =>
+						rgbi <= data_i(11 downto 8);
+					when "11" =>
+						rgbi <= data_i(15 downto 12);
 			end case;
+			end if;
 		else
 			rgbi <= (others => '0');
 		end if;
