@@ -109,7 +109,7 @@ begin
 				addr <=  addr_i;
 				addr_i <= std_logic_vector(unsigned(addr_i) + 1);
 			elsif(x_cnt(3 downto 0) = "0010")then
-				data_i <= data;
+				data_i <= data(7 downto 0) & data(15 downto 8);
 			end if;
 		else
 			if(hsync_i = '1')then
@@ -123,6 +123,7 @@ begin
 				addr_i <= (others => '0');
 				addr_old <= (others => '0');
 				addr <= (others => '0');
+				data_i <= (others => '0');
 			end if;
 		end if;
 	end if;
