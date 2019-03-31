@@ -113,7 +113,7 @@ begin
 			end if;
 		else
 			if(hsync_i = '1')then
-				if(y_cnt(1 downto 0) = "11")then
+				if(y_cnt(0) = '1')then
 					addr_old <= addr_i;
 				else
 					addr_i <= addr_old;
